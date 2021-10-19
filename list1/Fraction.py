@@ -223,5 +223,4 @@ class Fraction:
         """
         return self.denominator
 
-fl_fl = Fraction(1.5, 1.5)
-print(fl_fl)
+
