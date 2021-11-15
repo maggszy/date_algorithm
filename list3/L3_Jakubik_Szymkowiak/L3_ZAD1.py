@@ -26,5 +26,7 @@ def probability(n, k, p):
         prob+=binom_all_x
         count_mult+=3
     
+    factor = power(1-p,n)
+    prob *= factor
     count_mult+=1
-    return (power(1-p,n)*prob, count_mult)
+    return (prob, count_mult)
