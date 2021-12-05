@@ -172,8 +172,7 @@ class UnorderedList(object):
         index = 0
 
         if self.is_empty():
-            print("List already empty")
-            return
+            raise IndexError("Data structure already empty!")
         elif pos >= self.size() or pos < -self.size():
             raise IndexError("Wrong position!")
 
@@ -197,3 +196,23 @@ class UnorderedList(object):
                     previous.set_next(current.get_next())
                     return current.get_data()
 
+    def peek(self):
+        """
+        Metoda podaje wartość elementu na końcu listy
+        nie ściągajac go.
+        Nie pobiera argumentów.
+        Jeśli lsta jest pusta, rzuca wyjątkiem IndexError.
+        """
+        current = self.head
+        previous = None
+
+        if not self.is_empty():
+
+            while current != None:
+                previous = current
+                current = current.get_next()
+
+            return previous.get_data()
+
+        else:
+            raise IndexError("Data structure is empty!")
