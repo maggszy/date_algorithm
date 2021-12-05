@@ -1,6 +1,7 @@
-class QueueBaB(object):
+class QueueBaB(object):  #brak extra metody do printowania zawartości kolejki
   """
-  Klasa implementująca kolejkę za pomocą pythonowej listy tak,
+  Class implementing queue using python's list 
+tak,
   że początek kolejki jest przechowywany na początku listy.
   """
   
@@ -12,7 +13,9 @@ class QueueBaB(object):
     Metoda służąca do dodawania obiektu do kolejki.
     Pobiera jako argument obiekt który ma być dodany.
     Niczego nie zwraca.
-    """
+    """ 
+    self.list_of_items.append(item)
+
     
   def dequeue(self):
     """
@@ -20,6 +23,7 @@ class QueueBaB(object):
     Nie pobiera argumentów.
     Zwraca ściągnięty obiekt.
     """
+    return self.list_of_items.pop()
   
   def is_empty(self):
     """
@@ -35,11 +39,12 @@ class QueueBaB(object):
     Nie pobiera argumentów.
     Zwraca liczbę obiektów w kolejce.
     """
+    return len(self.list_of_items)
 
 
 
   
-class QueueBaE(object):
+class QueueBaE(object):  #brak extra metody do printowania zawartości kolejki
   """
   Klasa implementująca kolejkę za pomocą pythonowej listy tak,
   że początek kolejki jest przechowywany na końcu listy.
@@ -54,6 +59,7 @@ class QueueBaE(object):
     Pobiera jako argument obiekt który ma być dodany.
     Niczego nie zwraca.
     """
+    self.list_of_items.insert(0,item)
     
   def dequeue(self):
     """
@@ -61,6 +67,7 @@ class QueueBaE(object):
     Nie pobiera argumentów.
     Zwraca ściągnięty obiekt.
     """
+    return self.list_of_items.pop(0)
   
   def is_empty(self):
     """
@@ -76,3 +83,4 @@ class QueueBaE(object):
     Nie pobiera argumentów.
     Zwraca liczbę obiektów w kolejce.
     """
+    return len(self.list_of_items) 
