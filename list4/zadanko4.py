@@ -1,6 +1,6 @@
 import re
 
-class Stackk():
+class Stack():
     """
     Last in, first out
     (początek stostu od lewej)
@@ -13,7 +13,7 @@ class Stackk():
         self.list_of_items.append(item)
     
     def peek(self):
-        return self.list_of_items[len(self.list_of_items - 1)]
+        return self.list_of_items[len(self.list_of_items)-1]
         
     def dequeue(self):
         return self.list_of_items.pop()
@@ -34,56 +34,57 @@ def checking_HTML_correctness(filename):
     Jako argument przyjmuje nazwę pliku, który ma sprawdzić.
     Zwraca True jeśli dokument jest poprawny składniowo i False jeśli nie jest.
     """
+    #komentarze zagnieździć jakoś
     file_obj = open(filename, 'r')
-    text = file_obj.read()
-    #idk jak zrobić jeśli mają atrybuty jakieś
-    ignore=['<!DOCTYPE html>','<area>','<base>','<br />','<br>','<col>','<command>','<embed>','<hr>','<img>','<input>','<keygen>','<link>','<meta>','<param>','<source>','<track>','<wbr>']
-    stack=Stackk()
-    comment=re.compile('<!--.*?-->')
-    cmm_list=re.findall(comment, text)
-    pattern = re.compile('<.*?>')
-    pattern_cl=  re.compile('</.*?>')
-    tag_list = re.findall(pattern, text)
-    print(cmm_list)
+    text = list(file_obj.read())
+    #print(text)
+    ignore=['!DOCTYPE','area','base','br','br','col','command','embed','hr','img','input','keygen','link','meta','param','source','track','wbr']
+    stack_tags=Stack()
+    stack_brackets=Stack()
+    #comment=re.compile('<!--.*?-->')
+    #cmm_list=re.findall(comment, text) 
+    #pattern = re.compile('<.*?>')
+    #pattern_cl=  re.compile('</.*?>')
+    #tag_list = re.findall(pattern, text)
+    #print(cmm_list)
 
-#removing comments
-    for elem in cmm_list:
-        for i in tag_list:
-            if elem==i:
-                tag_list.remove(elem)
-    #print(tag_list)
+    for i in range(len(text)):
+        if text[i]=='<':
+            stack_brackets.enqueue(text[i])
+            i+=1
 
-#is removing tags that do not have its closing
-    for elem in ignore:
-        for i in tag_list:
-            if elem==i:
-                tag_list.remove(elem)
-    #print(tag_list)            
-
-
-    #print(tag_list)
-    balanced = True
-    index = 0
-    while index < len(tag_list) and balanced:
-        print(stack.show())
-        tag = tag_list[index]
-        if not pattern_cl.match(tag):
-           stack.enqueue(tag)
-           #print(stack.show())
-        else:
-            if stack.is_empty() or str.replace(tag, '/', '') != stack.peek():
-    # s.peek() - function, which returns top of the stack without removing
-                balanced = False
-            else:                
-                stack.pop()
-
-        index = index + 1
-        print(stack.show())
-        if balanced and stack.is_empty():
+            tag=''
+            while text[i] != '>':
+                tag +=text[i]
+                i+=1
+            tag= tag.split(' ')[0]
+            if stack_tags.is_empty() and (tag not in ignore):
+                stack_brackets.enqueue(tag)
+            else:
+                if tag == '/'+ stack_tags.peek():
+                    stack_tags.dequeue()
+                elif tag in ignore:
+                    pass
+                else:
+                    stack_tags.enqueue(tag)
+        elif text[i]=='>':
+            if stack_brackets.peek=='<':
+                stack_brackets.dequeue()
+        
+        if stack_brackets.is_empty() and stack_tags.is_empty():
             return True
         else:
+            stack_brackets.show()
+            stack_tags.show()
             return False
 
-#a=print(checking_HTML_correctness('L4_ZAD4_sampleHTML_3.txt'))
+#removing comments
+    #for elem in cmm_list:
+        #for i in tag_list:
+            #if elem==i:
+               # tag_list.remove(elem)
+
+
+a=print(checking_HTML_correctness('L4_ZAD4_sampleHTML_3.txt'))
 #a=print(checking_HTML_correctness('prawdo.txt'))
-a=print(checking_HTML_correctness('moje.txt'))
+#a=print(checking_HTML_correctness('moje.txt'))
