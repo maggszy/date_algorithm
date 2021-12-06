@@ -23,7 +23,7 @@ tak,
     Nie pobiera argumentów.
     Zwraca ściągnięty obiekt.
     """
-    return self.list_of_items.pop()
+    return self.list_of_items.pop(0)
   
   def is_empty(self):
     """
@@ -67,7 +67,7 @@ class QueueBaE(object):  #brak extra metody do printowania zawartości kolejki
     Nie pobiera argumentów.
     Zwraca ściągnięty obiekt.
     """
-    return self.list_of_items.pop(0)
+    return self.list_of_items.pop()
   
   def is_empty(self):
     """
