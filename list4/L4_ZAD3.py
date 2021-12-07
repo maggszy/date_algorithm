@@ -1,124 +1,48 @@
-class Queue:
-    def __init__(self):
-        self.items = []
-
-    def isEmpty(self):
-        return self.items == []
-
-    def enqueue(self, item):
-        self.items.insert(0,item)
-
-    def dequeue(self):
-        return self.items.pop()
-
-    def size(self):
-        return len(self.items)
+from math import floor
+from L4_ZAD1 import QueueBaB
+from L4_ZAD6 import StackUsingUL
+from random import randint
 
 
-class Deque:
-    def __init__(self):
-        self.items = []
-
-    def isEmpty(self):
-        return self.items == []
-
-    def addFront(self, item):
-        self.items.append(item)
-
-    def addRear(self, item):
-        self.items.insert(0,item)
-
-    def removeFront(self):
-        return self.items.pop()
-
-    def removeRear(self):
-        return self.items.pop(0)
-
-    def size(self):
-        return len(self.items)
+class Bus():
+    def __init__(self, capacity=54, interval=90):
+        self.capacity = capacity
+        self.minimum = capacity/3
+        self.interval = interval
 
 
-class Stack:
-    def __init__(self):
-        self.items = []
-
-    def isEmpty(self):
-        return self.items == []
-
-    def push(self, item):
-        self.items.append(item)
-
-    def pop(self):
-        return self.items.pop()
-
-    def peek(self):
-        return self.items[len(self.items)-1]
-
-    def size(self):
-        return len(self.items)
-
-######################################
-# Modelowanie ewakuacji uczesników wydarzenia autokarami.
-# Założenia:
-# Wszyscy jadą w to samo miejsce, autokar nie zatrzmuje się na przystankach na trasie, każdy uczestnik wydarzenia wraca autokarem.
-
-
-######################################
-
-class Bus:
-    def __init__(self, arrival):
-        self.newbus = arrival # jak często autobus podjeżdża na przystanek
-        self.currentDrive = None
-        self.timeRemaining = 0 # czas oczekiwania na kolejny kurs autobusu
-        self.bus_capacity = 25
-
-    def tick(self):
-        if self.currentDrive != None:
-            self.timeRemaining = self.timeRemaining - 1
-        if self.timeRemaining <= 0:
-            self.currentDrive = None
-
-    def on_the_road(self):
-        if self.currentDrive != None:
-            return True
-        else:
-            return False
-
-    def onboard(self):
-        # return how much passengers is on board
-        pass
-
-
-class Passenger:
-    def __init__(self, geton_time, rate):
-        self.geton_time = geton_time
-        self.rate = rate # w jakim tempie ludzie przychodza na przystanek
-        self.person_id = 0
-
-    def getStamp(self):
-        return self.timestamp
-
-    def waitTime(self, currenttime):
-        return currenttime - self.timestamp
-
-
-def simulation(numSeconds):
+def simulation(capacity, interval=1):
     bus = Bus()
-    group = Queue()
-    waitingtimes = []
+    bus.capacity = capacity
+    bus.interval = interval
+    # list_of_people = [130, 200, 500, 100, 250, 180, 320, 120]
+    list_of_people = [randint(0, 10) for i in range(1440)]
+    # list_of_people = [54, 108, 162, 110, 54, 54, 108]
 
-    for currentSecond in range(numSeconds):
-        if Bus.on_the_road() < Bus.bus_capacity:
-            passenger = Passenger(currentSecond)
-            group.enqueue(passenger)
+    waiting = QueueBaB()
+    bus_plan = StackUsingUL()
 
-    if (not bus.on_the_road()) and (not group.isEmpty()):
-        nexttask = group.dequeue()
-        waitingtimes.append(nexttask.waitTime(currentSecond))
-        bus.startNext(nexttask)
+    periods = [list_of_people[i:30*interval+i] for i in range(0, len(list_of_people), 30*interval)]
 
-    bus.tick()
+    for n in periods:
+        group = sum(n)
+        if not waiting.is_empty():
+            tmp = waiting.dequeue()
+        else:
+            tmp = 0
 
-    # averageWait = sum(waitingtimes) / len(waitingtimes)
-    # print("Average Wait %6.2f secs %3d tasks remaining." % (averageWait, group.size()))
+        amount_of_buses = floor((group + tmp)/capacity)
+        others = group % capacity
+        if others >= bus.minimum:
+            amount_of_buses += 1
+        else:
+            waiting.enqueue(others)
+
+        bus_plan.push(amount_of_buses)
+
+    return bus_plan
+
+
+print(simulation(54, 2))
+
 
