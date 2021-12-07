@@ -5,7 +5,7 @@ class QueueBaB(object):
   """
 
   def __init__(self):
-      self.list_of_items = []
+    self.list_of_items = []
     
   def enqueue(self, item):
     """
