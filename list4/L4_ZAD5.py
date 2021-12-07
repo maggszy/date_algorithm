@@ -31,7 +31,7 @@ class UnorderedList(object):
         while current != None:
             li.append(current.get_data())
             current = current.get_next()
-        s = ("elements in the list are [" + ', '.join(['{}'] * len(li)) + "]")
+        s = ("[" + ', '.join(['{}'] * len(li)) + "]")
         return s.format(*li)
 
     def add(self, item):
