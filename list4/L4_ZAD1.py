@@ -41,6 +41,9 @@ tak,
     """
     return len(self.list_of_items)
 
+  def __str__(self):
+    return str(self.list_of_items)
+
 
 
   

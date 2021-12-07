@@ -66,8 +66,8 @@ class Stack:
 ######################################
 
 class Bus:
-    def __init__(self, ppm):
-        self.newbus = ppm # jak często autobus podjeżdża na przystanek
+    def __init__(self, arrival):
+        self.newbus = arrival # jak często autobus podjeżdża na przystanek
         self.currentDrive = None
         self.timeRemaining = 0 # czas oczekiwania na kolejny kurs autobusu
         self.bus_capacity = 25
@@ -102,8 +102,8 @@ class Passenger:
         return currenttime - self.timestamp
 
 
-def simulation(numSeconds, amount_of_doors):
-    bus = Bus(amount_of_doors)
+def simulation(numSeconds):
+    bus = Bus()
     group = Queue()
     waitingtimes = []
 

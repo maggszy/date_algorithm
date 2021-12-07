@@ -47,3 +47,6 @@ class StackUsingUL(object):
         Zwraca liczbę elementów na stosie.
         """
         return self.items.size()
+
+    def __str__(self):
+        return str(self.items)
