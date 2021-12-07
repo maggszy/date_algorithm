@@ -1,12 +1,11 @@
-class QueueBaB(object):  #brak extra metody do printowania zawartości kolejki
+class QueueBaB(object): 
   """
-  Class implementing queue using python's list 
-tak,
+  Klasa implementująca kolejkę za pomocą pythonowej listy tak,
   że początek kolejki jest przechowywany na początku listy.
   """
-  
+
   def __init__(self):
-    self.list_of_items = []
+      self.list_of_items = []
     
   def enqueue(self, item):
     """
@@ -24,7 +23,7 @@ tak,
     Zwraca ściągnięty obiekt.
     """
     return self.list_of_items.pop(0)
-  
+
   def is_empty(self):
     """
     Metoda służąca do sprawdzania, czy kolejka jest pusta.
@@ -42,12 +41,16 @@ tak,
     return len(self.list_of_items)
 
   def __str__(self):
+    """
+    Medota odpowiadająca za nieformalną reprezentacje kolejki.
+    Nie pobiera argumentów.
+    """
     return str(self.list_of_items)
 
 
 
   
-class QueueBaE(object):  #brak extra metody do printowania zawartości kolejki
+class QueueBaE(object): 
   """
   Klasa implementująca kolejkę za pomocą pythonowej listy tak,
   że początek kolejki jest przechowywany na końcu listy.
@@ -87,3 +90,10 @@ class QueueBaE(object):  #brak extra metody do printowania zawartości kolejki
     Zwraca liczbę obiektów w kolejce.
     """
     return len(self.list_of_items)
+
+  def __str__(self):
+    """
+    Medota odpowiadająca za nieformalną reprezentacje kolejki.
+    Nie pobiera argumentów.
+    """
+    return str(self.list_of_items)
