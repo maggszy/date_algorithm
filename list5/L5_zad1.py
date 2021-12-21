@@ -3,95 +3,41 @@ from scipy import linalg
 from scipy import stats
 import time, random
 import matplotlib.pyplot as plt
-from numpy.polynomial import Polynomial
 from scipy.optimize import curve_fit
 
-#not good
-def cramer_matrix(n):
-    a = np.array([[random.randint(-500, 500) for _ in range(n)] for _ in range(n)])
-    b = np.array([random.randint(-500, 500) for _ in range(n)])
-    if np.linalg.det(a) != 0:
-        return linalg.solve(a, b)
 
-def cramer_matrix2(n):
-    a = np.array(np.random.randint(0, 1000, size=(n, n)))
-    b = np.array(np.random.randint(0, 1000, n))
-    #x = linalg.solve(a, b)
+def cramer_matrix(n):
+    a = np.array([[random.randint(-50, 50) for _ in range(n)] for _ in range(n)])
+    b = np.array([random.randint(-50, 50) for _ in range(n)])
     return linalg.solve(a, b)
 
 
 def time_check(n):
     t0 = time.time()
-    cramer_matrix2(n)
+    cramer_matrix(n)
     t1 = time.time()
 
     return t1 - t0
 
-# x=[i for i in range(0,1000,5)]
-# print(approx=[slope*x[i] for i in range(x)])
-
-# plt.plot(log_data(100)[0], log_data(100)[1])
 
 
-def plotting2(num,step):
-    x=[i for i in range(0,num,step)]
-    times=[time_check(i) for i in x]
+def log_plot(min=500, max=8000, step=800):
+    x = [i for i in range(min, max, step)]
+    times = [time_check(i) for i in x]
 
-    slope = stats.linregress(x,times)[0]
-    #inter= stats.linregress(x,times)[1]
-    print("Slope", slope)
+    slope = stats.linregress(np.log(x), np.log(times))[0]
 
-    approx=[slope*x[i] for i in range(len(x))]
+    plt.plot(x, times, '.', label='Dane')
+    plt.loglog(x, times, label='Wsp kierunkowy = %4f' % slope)
 
-    plt.loglog(x, times, '.')
-    plt.plot(x, approx)
-    # plt.plot(x)
-    plt.xlabel("Wielkość macierzy") 
-    plt.ylabel("Czas wykonania")
-    plt.title("Złożoność obliczeniowa ")
+    plt.xlabel("Wielkość macierzy")
+    plt.ylabel("Czas wykonania operacji")
+    plt.title("Wykres czasu w zależności od wielkości macierzy w skali logarytmicznej")
     plt.grid()
+    plt.legend(loc='upper left')
     plt.show()
 
-    
-
-
-
-def checking(num, step):
-    #x=[i for i in range(0,num,step)]
-    #times=[time_check(i) for i in x]
-
-    x = np.arange(0, num)
-    plotting2(num, step)
-    #plotting2(num, step)
-    plt.show()
-
-    #x= list(range(0,num,4))
-    #times=[]
-    #for i in x:
-     #   times.append(time_check(i))
-
-    #plotting2(x, times)
 
 if __name__ == "__main__":
-
-
-    #X, Y = log_data(1000)
-    #plt.plot(X, Y)
-    #plt.show()
-    plotting2(500, 5)
-
-    # x=[i for i in range(1, 1000, 15)]
-    # times=[time_check(i) for i in x]
-
-    # slope = stats.linregress(X, Y)[0]
-    # print("Slope", slope)
-
-    # approx_matrix = [slope*u for u in x]
-    # plt.plot(x, times, '.')
-    # plt.plot(approx_matrix, times)
-
-    # plt.xlabel("Wielkość macierzy") 
-    # plt.ylabel("Czas wykonania")
-    # plt.title("Złożoność obliczeniowa ")
-    # plt.grid()
-    # plt.show()
+    #log_plot(500, 6000, 200)
+    log_plot()
