@@ -27,8 +27,8 @@ def time_check(n):
 
     return t1 - t0
 
-
-
+# x=[i for i in range(0,1000,5)]
+# print(approx=[slope*x[i] for i in range(x)])
 
 # plt.plot(log_data(100)[0], log_data(100)[1])
 
@@ -38,11 +38,13 @@ def plotting2(num,step):
     times=[time_check(i) for i in x]
 
     slope = stats.linregress(x,times)[0]
+    #inter= stats.linregress(x,times)[1]
     print("Slope", slope)
 
+    approx=[slope*x[i] for i in range(len(x))]
 
     plt.loglog(x, times, '.')
-    # plt.plot(x, times, '.')
+    plt.plot(x, approx)
     # plt.plot(x)
     plt.xlabel("Wielkość macierzy") 
     plt.ylabel("Czas wykonania")
