@@ -67,8 +67,9 @@ class BinHeap:
         if k > BinHeap.find_min(self):
             self.heap_list.append(k)
             BinHeap.del_min(self)
+            self.current_size = self.current_size + 1
         else:
-            pass
+            raise Exception("Heap already reached max capacity and item is smaller than root")
 
     def __str__(self):
         txt = "{}".format(self.heap_list[1:])
@@ -78,4 +79,6 @@ class BinHeap:
 bh = BinHeap(8)
 bh.build_heap([44, 33, 77, 11, 55, 88, 66, 22])
 bh.insert(28)
+print(bh.current_size)
+bh.insert(11)
 print(bh)
