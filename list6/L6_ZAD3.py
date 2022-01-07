@@ -43,7 +43,7 @@ class BinHeap:
 
     def del_min(self):  # complexity przejmuje od percDown
         retval = self.heap_list[1]
-        self.heap_list[1] = self.heap_list[-1]
+        self.heap_list[1] = self.heap_list[-1]    # tu zmienione z self.heap_list[current_size]
         self.current_size = self.current_size - 1
         self.heap_list.pop()
         self.perc_down(1)
@@ -65,9 +65,8 @@ class BinHeap:
 
     def keep_max(self, k):
         if k > BinHeap.find_min(self):
-            self.heap_list.append(k)
-            BinHeap.del_min(self)
-            self.current_size = self.current_size + 1
+            self.heap_list[1] = k
+            self.perc_down(1)
         else:
             raise Exception("Heap already reached max capacity and item is smaller than root")
 
@@ -80,5 +79,7 @@ bh = BinHeap(8)
 bh.build_heap([44, 33, 77, 11, 55, 88, 66, 22])
 bh.insert(28)
 print(bh.current_size)
+print(bh)
 bh.insert(11)
+print(bh.current_size)
 print(bh)
