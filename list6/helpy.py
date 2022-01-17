@@ -87,3 +87,26 @@ class BinaryTree:
 
     def getRootVal(self):
         return self.key
+
+def bracket_check(sym_list): #musi być lista stringów
+    stack = Stack()           
+    balanced = True       
+    i = 0
+    while i < len(sym_list) and balanced: 
+        symbol = sym_list[i]             
+        if symbol == "(":                         
+            stack.push(symbol)
+        else:
+            if stack.is_empty():                      
+                balanced = False
+            else:
+                stack.pop()                           
+
+        i = i + 1
+
+    if balanced and stack.is_empty():
+        return True
+    else:
+        return False
+
+

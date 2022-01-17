@@ -14,7 +14,7 @@ class BinHeap:
                 tmp=self.heapList[i//2]
                 self.heapList[i//2]=self.heapList[i]
                 self.heapList[i]=tmp
-        i=i//2
+            i=i//2
                 
     def insert(self,k):
         self.heapList.append(k)
