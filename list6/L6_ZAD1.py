@@ -12,7 +12,7 @@ class TreeNode:
     def hasRightChild(self):
         return self.rightChild
         
-    def isLeftChild(self):
+    def isLeftChild(self): #sprawdzic czy poprawne
         return self.parent and self.parent.leftChild==self 
     
     def isRightChild(self):
@@ -22,7 +22,7 @@ class TreeNode:
         return not self.parent 
         
     def isLeaf(self):
-        return not (self.rightChildorself.leftChild)
+        return not (self.rightChild or self.leftChild)
         
     def hasAnyChildren(self):
         return self.rightChild or self.leftChild
@@ -31,7 +31,8 @@ class TreeNode:
         return self.rightChild and self.leftChild
         
     def replaceNodeData(self,key,value,lc,rc):
-        self.key=keyself.payload=value 
+        self.key=key
+        self.payload=value 
         self.leftChild=lc
         self.rightChild=rc
         if self.hasLeftChild():
