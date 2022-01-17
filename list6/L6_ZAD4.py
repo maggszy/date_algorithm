@@ -75,7 +75,7 @@ def expression_tree(formula):
 
 def derivation(tree):
 
-    dtree = BinaryTree(None)
+    dtree = BinaryTree('')
 
     if tree.get_root_val() == '+':
         derivation(tree.get_left_child())
@@ -94,6 +94,9 @@ def derivation(tree):
 
     elif tree.get_root_val() == '/':
         dtree.set_root_val('/')
+        dtree.insert_left('-')
+        dtree.insert_right('^')
+        dtree = dtree.get_left_child()
         dtree.insert_left('*')
         dtree.insert_right('*')
 
