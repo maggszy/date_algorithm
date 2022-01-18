@@ -87,8 +87,12 @@ def derivation(tree, var):
     pstack.push(dtree)
 
     if tree.get_root_val() in ['+', '-']:
-        dtree.left_child = derivation(tree.get_left_child())
-        dtree.right_child = derivation(tree.get_right_child())
+        dtree.left_child = derivation(tree.get_left_child(), var)
+        dtree.right_child = derivation(tree.get_right_child(), var)
+        if tree.get_root_val() == '+':
+            dtree.set_root_val('+')
+        else:
+            dtree.set_root_val('-')
 
     elif tree.get_root_val() == '*':
         dtree.set_root_val('+')
@@ -138,7 +142,14 @@ def derivation(tree, var):
         dtree.insert_right('2')
         dtree = pstack.pop()
 
+    else:
+        if tree.get_root_val() == var:
+            dtree.set_root_val(1)
+        else:
+            dtree.set_root_val(0)
+
     return dtree
+
 
 def printexp(tree):
     string_val = ""
@@ -151,10 +162,16 @@ def printexp(tree):
 
 
 # formula2 = parsing('(((-1)*2*(5+x))/sin(x))')
-formula = parsing('((2*(5+x))/sin(x))')
+# formula = parsing('((2*(5+x))/sin(x))')
 # formula = parsing('((2*((5+x)^2))/sin(x))')
 # formula = parsing('((2*(5+x))/2*sin(x))^2')
 # print(formula)
-pt = expression_tree(formula)
+
+
+test1 = parsing('((5-x) * 2 )')
+pt = expression_tree(test1)
 #print(derivation(pt))
+print("Drzewo wyrażenia matematycznego")
 print(printexp(pt))
+print("Szukana pochodna")
+print(printexp(derivation(pt, "x")))
