@@ -106,17 +106,37 @@ def derivation(tree, var):
         dtree.insert_right(derivation(tree.get_right_child(), var))
         dtree = pstack.pop()
 
-    elif tree.get_root_val() == '^':
-        pass
-
     elif tree.get_root_val() == '/':
         dtree.set_root_val('/')
         dtree.insert_left('-')
-        dtree.insert_right('^')
+        pstack.push()
         dtree = dtree.get_left_child()
+
         dtree.insert_left('*')
+        pstack.push()
+        dtree = dtree.get_left_child()
+
+        dtree.insert_left(derivation(tree.get_left_child(), var))
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
         dtree.insert_right('*')
-#nie skończone, do wywalenia
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(tree.get_left_child())
+        dtree.insert_right(derivation(tree.get_right_child(), var))
+        pstack.pop()
+        dtree = pstack.pop()
+
+        #jesteśmy znowu w '/', dodajemy prawe poddrzewo
+        dtree.insert_right('^')
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(tree.get_right_child())
+        dtree.insert_right('2')
+        dtree = pstack.pop()
 
     return dtree
 
