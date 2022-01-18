@@ -210,36 +210,3 @@ class BinarySearchTree:
                                             currentNode.right_child.left_child,
                                             currentNode.right_child.right_child)
 
-    
-# BST = BinarySearchTree()
-# BST.put(3, 'third')
-# BST.put(4,'fourth')
-# BST.put(5,'fifth')
-# BST.put(1,'first')
-# BST.put(2, 'second')
-# BST.put(3, 'thid')
-# BST.put(3, 'thid')
-
-# print('Tree root key: ', BST.root.key)
-# print('Tree root left child key', BST.root.left_child.key)
-# print('Tree root left child child key', BST.root.left_child.right_child.key)
-# #print('Proba znalezienia drugiej 3', BST.root.left_child.left_child.key)
-# print('Tree root right child key', BST.root.right_child.key)
-# print('Tree root right child child key', BST.root.right_child.right_child.key)
-# print('Tree root powtarzalność: ', BST.root.counter)
-# print('wartość podwojonego klucza:',BST.root.payload)
-# print('get get:', BST.get(5))
-# print('------------------------------------')
-# BST.delete(3)
-# print('wielkość:', BST.length())
-
-# print('Tree root powtarzalność: ', BST.root.counter)
-# print('tree root value:',BST.root.payload)
-# print('Tree root left child key', BST.root.left_child.key)
-# # print('Tree root right child key', BST.root.right_child.key)
-# #print(BST[0],BST[1],BST[2],BST[3],BST[4])
-# #print(BST) dupaaa
-# print('-------------------------------')
-# # # BST.delete(1)
-# # print('Tree root left child key', BST.root.left_child.key)
-# print('Tree root left child value', BST.root.left_child.payload)

@@ -1,14 +1,10 @@
 from helpy import *
-import operator
 import string
-import time
-from typing import Any, List, Optional, Tuple, Union
 
 operators = ['+', '-', '*', '/', '^']
-functions = ['sin(', 'cos(', 'ln(', 'exp(', 'sqrt(']   # takes one argument
+functions = ['sin', 'cos', 'ln', 'exp']   # takes one argument
 brackets = ["(", ")"]
-
-letters = set(string.ascii_lowercase).union(set(string.ascii_uppercase)).union({"pi"})
+letters = set(string.ascii_lowercase).union({"pi"})
 
 
 def parsing(expression):
@@ -55,55 +51,155 @@ def expression_tree(formula):
             tmp_tree.insert_left('')
             stack.push(tmp_tree)
             tmp_tree = tmp_tree.get_left_child()
-            # print(i,'--->')#,b_tree)
         elif i == ')': 
             tmp_tree = stack.pop()  
-            # print(i,'--->')#,b_tree)
         elif i in operators or i in functions:
             tmp_tree.set_root_val(i)
             tmp_tree.insert_right('')
             stack.push(tmp_tree)
             tmp_tree = tmp_tree.get_right_child()
-            # parent = stack.pop()
-            # tmp_tree = parent
-            # print(i,'--->')#,b_tree)
         elif i not in operators and i not in functions and i not in brackets:
             tmp_tree.set_root_val(i)
             parent = stack.pop()
             tmp_tree = parent
-            # print(i,'--->')#,b_tree)
 
     return b_tree
 
-def derivation(tree):
+
+def derivation(tree, var):
 
     dtree = BinaryTree('')
+    pstack = Stack()
+    pstack.push(dtree)
 
-    if tree.get_root_val() == '+':
-        derivation(tree.get_left_child())
-        derivation(tree.get_right_child())
-
-    elif tree.get_root_val() == '-':
-        derivation(tree.get_left_child())
-        derivation(tree.get_right_child())
+    if tree.get_root_val() in ['+', '-']:
+        dtree.left_child = derivation(tree.get_left_child(), var)
+        dtree.right_child = derivation(tree.get_right_child(), var)
+        if tree.get_root_val() == '+':
+            dtree.set_root_val('+')
+        else:
+            dtree.set_root_val('-')
 
     elif tree.get_root_val() == '*':
         dtree.set_root_val('+')
         dtree.insert_left('*')
+        pstack.push(dtree)
+        dtree = dtree.get_left_child()
+        dtree.insert_left(derivation(tree.get_left_child(), var))
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
         dtree.insert_right('*')
-        derivation(tree.get_right_child())
-        derivation(tree.get_left_child())
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+        dtree.insert_left(tree.get_left_child())
+        dtree.insert_right(derivation(tree.get_right_child(), var))
+        dtree = pstack.pop()
 
     elif tree.get_root_val() == '/':
         dtree.set_root_val('/')
         dtree.insert_left('-')
-        dtree.insert_right('^')
+        pstack.push()
         dtree = dtree.get_left_child()
-        dtree.insert_left('*')
-        dtree.insert_right('*')
 
-def expr_tree(formula):
-    pass
+        dtree.insert_left('*')
+        pstack.push()
+        dtree = dtree.get_left_child()
+
+        dtree.insert_left(derivation(tree.get_left_child(), var))
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
+        dtree.insert_right('*')
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(tree.get_left_child())
+        dtree.insert_right(derivation(tree.get_right_child(), var))
+        pstack.pop()
+        dtree = pstack.pop()
+
+        #jesteśmy znowu w '/', dodajemy prawe poddrzewo
+        dtree.insert_right('^')
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(tree.get_right_child())
+        dtree.insert_right('2')
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == "^":
+        dtree.set_root_val("*")
+        dtree.insert_left('*')
+        dtree.insert_right(derivation(tree.get_left_child()))
+
+        pstack.push(dtree)
+        dtree = dtree.get_left_child()
+        dtree.insert_left(tree.get_right_child())
+        dtree.insert_right("^")
+
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(tree.get_left_child())
+        dtree.insert_right(tree.get_right_child() - 1)
+        pstack.pop()
+        dtree = pstack.pop()
+
+        pstack.push(dtree)
+        dtree = dtree.get_left_child()
+
+    elif tree.get_root_val() == 'sin':
+        dtree.set_root_val("*")
+
+        dtree.insert_right('cos')
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == 'cos':
+        dtree.set_root_val("*")
+
+        dtree.insert_right('*')
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(-1)
+        dtree.insert_right("sin")
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_right(tree.get_right_child())
+        pstack.pop()
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == 'ln':
+        dtree.set_root_val("/")
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        dtree.insert_right(tree.get_right_child())
+
+    elif tree.get_root_val() == 'exp':
+        dtree.set_root_val("*")
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        dtree.insert_right('exp')
+
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
+    else:
+        if tree.get_root_val() == var:
+            dtree.set_root_val(1)
+        else:
+            dtree.set_root_val(0)
+
+    return dtree
+
 
 def printexp(tree):
     string_val = ""
@@ -113,10 +209,6 @@ def printexp(tree):
         string_val = string_val + printexp(tree.get_right_child())+')'
     return string_val
 
-# formula2 = parsing('(((-1)*2*(5+x))/sin(x))')
-formula = parsing('((2*(5+x))/sin(x))')
-# fomula = '(2*(sin(x)))/(5+x))'
-print(formula)
-pt = expression_tree(formula)
-#print(derivation(pt))
-print(printexp(pt))
+
+
+

@@ -23,7 +23,7 @@ class BinHeap:
     def find_min(self):
         return self.heap_list[1]
 
-    def perc_down(self, i):  # complexity O(logn)  (?)
+    def perc_down(self, i):  # complexity O(logn)  
         while (i * 2) <= self.current_size:
             mc = self.min_child(i)
             if self.heap_list[i] > self.heap_list[mc]:
@@ -43,13 +43,13 @@ class BinHeap:
 
     def del_min(self):  # complexity przejmuje od percDown
         retval = self.heap_list[1]
-        self.heap_list[1] = self.heap_list[-1]    # tu zmienione z self.heap_list[current_size]
+        self.heap_list[1] = self.heap_list[-1]   
         self.current_size = self.current_size - 1
         self.heap_list.pop()
         self.perc_down(1)
         return retval
 
-    def build_heap(self, alist):  # complexity O(n) (?)
+    def build_heap(self, alist):  # complexity O(n) 
         i = len(alist) // 2
         self.current_size = len(alist)
         self.heap_list = [0] + alist[:]
