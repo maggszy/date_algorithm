@@ -36,11 +36,7 @@ def parsing(expression):
 
     return result
 
-#tylko nazwa funkcji, noting else
-def transform_to_postfix(formula):
-    pass
 
-# dobra wersja 
 def expression_tree(formula):
     """ Function to represent list of characters as a tree.
         Represents brackets, functions, operators and numerical values."""
@@ -137,6 +133,27 @@ def derivation(tree, var):
         dtree.insert_left(tree.get_right_child())
         dtree.insert_right('2')
         dtree = pstack.pop()
+
+    elif tree.get_root_val() == "^":
+        dtree.set_root_val("*")
+        dtree.insert_left('*')
+        dtree.insert_right(derivation(tree.get_left_child()))
+
+        pstack.push(dtree)
+        dtree = dtree.get_left_child()
+        dtree.insert_left(tree.get_right_child())
+        dtree.insert_right("^")
+
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(tree.get_left_child())
+        dtree.insert_right(tree.get_right_child() - 1)
+        pstack.pop()
+        dtree = pstack.pop()
+
+        pstack.push(dtree)
+        dtree = dtree.get_left_child()
 
     elif tree.get_root_val() == 'sin':
         dtree.set_root_val("*")
