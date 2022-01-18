@@ -1,13 +1,9 @@
 from helpy import *
-import operator
 import string
-import time
-from typing import Any, List, Optional, Tuple, Union
 
 operators = ['+', '-', '*', '/', '^']
-functions = ['sin', 'cos', 'ln', 'exp', 'sqrt']   # takes one argument
+functions = ['sin', 'cos', 'ln', 'exp']   # takes one argument
 brackets = ["(", ")"]
-
 letters = set(string.ascii_lowercase).union({"pi"})
 
 
@@ -140,6 +136,49 @@ def derivation(tree, var):
 
         dtree.insert_left(tree.get_right_child())
         dtree.insert_right('2')
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == 'sin':
+        dtree.set_root_val("*")
+
+        dtree.insert_right('cos')
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == 'cos':
+        dtree.set_root_val("*")
+
+        dtree.insert_right('*')
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_left(-1)
+        dtree.insert_right("sin")
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+
+        dtree.insert_right(tree.get_right_child())
+        pstack.pop()
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == 'ln':
+        dtree.set_root_val("/")
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        dtree.insert_right(tree.get_right_child())
+
+    elif tree.get_root_val() == 'exp':
+        dtree.set_root_val("*")
+        dtree.insert_left(derivation(tree.get_right_child(), var))
+        dtree.insert_right('exp')
+
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+        dtree.insert_right(tree.get_right_child())
         dtree = pstack.pop()
 
     else:
