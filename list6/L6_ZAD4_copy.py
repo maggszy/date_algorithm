@@ -8,7 +8,7 @@ operators = ['+', '-', '*', '/', '^']
 functions = ['sin', 'cos', 'ln', 'exp', 'sqrt']   # takes one argument
 brackets = ["(", ")"]
 
-letters = set(string.ascii_lowercase).union(set(string.ascii_uppercase)).union({"pi"})
+letters = set(string.ascii_lowercase).union({"pi"})
 
 
 def parsing(expression):
@@ -39,6 +39,7 @@ def parsing(expression):
         result.append(elems_dict[ind])
 
     return result
+
 #tylko nazwa funkcji, noting else
 def transform_to_postfix(formula):
     pass
@@ -79,24 +80,34 @@ def expression_tree(formula):
     return b_tree
 
 
-def derivation(tree):
+def derivation(tree, var):
 
     dtree = BinaryTree('')
+    pstack = Stack()
+    pstack.push(dtree)
 
-    if tree.get_root_val() == '+':
-        derivation(tree.get_left_child())
-        derivation(tree.get_right_child())
-
-    elif tree.get_root_val() == '-':
-        derivation(tree.get_left_child())
-        derivation(tree.get_right_child())
+    if tree.get_root_val() in ['+', '-']:
+        dtree.left_child = derivation(tree.get_left_child())
+        dtree.right_child = derivation(tree.get_right_child())
 
     elif tree.get_root_val() == '*':
         dtree.set_root_val('+')
         dtree.insert_left('*')
+        pstack.push(dtree)
+        dtree = dtree.get_left_child()
+        dtree.insert_left(derivation(tree.get_left_child(), var))
+        dtree.insert_right(tree.get_right_child())
+        dtree = pstack.pop()
+
         dtree.insert_right('*')
-        derivation(tree.get_right_child())
-        derivation(tree.get_left_child())
+        pstack.push(dtree)
+        dtree = dtree.get_right_child()
+        dtree.insert_left(tree.get_left_child())
+        dtree.insert_right(derivation(tree.get_right_child(), var))
+        dtree = pstack.pop()
+
+    elif tree.get_root_val() == '^':
+        pass
 
     elif tree.get_root_val() == '/':
         dtree.set_root_val('/')
@@ -106,8 +117,8 @@ def derivation(tree):
         dtree.insert_left('*')
         dtree.insert_right('*')
 #nie skończone, do wywalenia
-def expr_tree(formula):
-    pass
+
+    return dtree
 
 def printexp(tree):
     string_val = ""
