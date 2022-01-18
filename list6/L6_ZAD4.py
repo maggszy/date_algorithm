@@ -44,34 +44,36 @@ def parsing(expression):
 def expression_tree(formula):
     """ Function to represent list of characters as a tree.
         Represents brackets, functions, operators and numerical values."""
-
+    
     stack = Stack()
-    tmp_tree = BinaryTree('')
-    stack.push(tmp_tree)
+    b_tree = BinaryTree('')
+    stack.push(b_tree)
+    tmp_tree = b_tree
 
     for i in formula:
         if i == '(':
-            print('(')
             tmp_tree.insert_left('')
             stack.push(tmp_tree)
             tmp_tree = tmp_tree.get_left_child()
-        elif i == ')':
-            print(')')
-            tmp_tree = stack.pop()
+            # print(i,'--->')#,b_tree)
+        elif i == ')': 
+            tmp_tree = stack.pop()  
+            # print(i,'--->')#,b_tree)
         elif i in operators or i in functions:
-            print('operator or function')
             tmp_tree.set_root_val(i)
             tmp_tree.insert_right('')
             stack.push(tmp_tree)
             tmp_tree = tmp_tree.get_right_child()
+            # parent = stack.pop()
+            # tmp_tree = parent
+            # print(i,'--->')#,b_tree)
         elif i not in operators and i not in functions and i not in brackets:
-            print('liczba')
             tmp_tree.set_root_val(i)
             parent = stack.pop()
             tmp_tree = parent
+            # print(i,'--->')#,b_tree)
 
-    return tmp_tree
-
+    return b_tree
 
 def derivation(tree):
 
@@ -100,6 +102,8 @@ def derivation(tree):
         dtree.insert_left('*')
         dtree.insert_right('*')
 
+def expr_tree(formula):
+    pass
 
 def printexp(tree):
     string_val = ""
@@ -109,8 +113,10 @@ def printexp(tree):
         string_val = string_val + printexp(tree.get_right_child())+')'
     return string_val
 
-
-formula = parsing('(2*sin(x))/(5+x)')
+# formula2 = parsing('(((-1)*2*(5+x))/sin(x))')
+formula = parsing('((2*(5+x))/sin(x))')
+# fomula = '(2*(sin(x)))/(5+x))'
 print(formula)
 pt = expression_tree(formula)
+#print(derivation(pt))
 print(printexp(pt))
