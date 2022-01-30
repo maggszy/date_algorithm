@@ -1,3 +1,6 @@
+from L7_ZAD1 import *
+import sys
+
 class Queue:
     def __init__(self):
         self.items = []
