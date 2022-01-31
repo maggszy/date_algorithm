@@ -1,5 +1,5 @@
-from L7_ZAD1 import *
 import sys
+
 
 class Queue:
     def __init__(self):
@@ -74,21 +74,54 @@ class Vertex:
         return self.id
 
 
-#przeszukiwanie wszerz
-def bfs(g,start):
-    start.setDistance(0)                            #distance 0 indicates it is a start node
-    start.setPred(None)                             #no predecessor at start
-    vertQueue = Queue()
-    vertQueue.enqueue(start)                        #add start to processing queue
-    while (vertQueue.size() > 0):
-        currentVert = vertQueue.dequeue()           #pop next node to process -> current node
-        for nbr in currentVert.getConnections():    #check all neighbors of the current node
-            if (nbr.getColor() == 'white'):         #if the neighbor is white
-                nbr.setColor('gray')                             #change its color to grey
-                nbr.setDistance(currentVert.getDistance() + 1)   #set its distance
-                nbr.setPred(currentVert)                         #current node is its predecessor
-                vertQueue.enqueue(nbr)                           #add it to the queue
-        currentVert.setColor('black')               #change current node to black after visiting all of its neigh.
+class Graph:
+    def __init__(self):
+        self.vertList = {}
+        self.numVertices = 0
+
+    def addVertex(self,key):
+        self.numVertices = self.numVertices + 1
+        newVertex = Vertex(key)
+        self.vertList[key] = newVertex
+        return newVertex
+
+    def getVertex(self,n):
+        if n in self.vertList:
+            return self.vertList[n]
+        else:
+            return None
+
+    def __contains__(self,n):
+        return n in self.vertList
+
+    def addEdge(self,f,t,cost=0):
+        if f not in self.vertList:
+            nv = self.addVertex(f)
+        if t not in self.vertList:
+            nv = self.addVertex(t)
+        self.vertList[f].addNeighbor(self.vertList[t], cost)
+
+    def getVertices(self):
+        return self.vertList.keys()
+
+    def __iter__(self):
+        return iter(self.vertList.values())
+
+    #########################dodane metody do Graph z zad1#######################################
+    def bfs(g,start):
+        start.setDistance(0)                            #distance 0 indicates it is a start node
+        start.setPred(None)                             #no predecessor at start
+        vertQueue = Queue()
+        vertQueue.enqueue(start)                        #add start to processing queue
+        while (vertQueue.size() > 0):
+            currentVert = vertQueue.dequeue()           #pop next node to process -> current node
+            for nbr in currentVert.getConnections():    #check all neighbors of the current node
+                if (nbr.getColor() == 'white'):         #if the neighbor is white
+                    nbr.setColor('gray')                             #change its color to grey
+                    nbr.setDistance(currentVert.getDistance() + 1)   #set its distance
+                    nbr.setPred(currentVert)                         #current node is its predecessor
+                    vertQueue.enqueue(nbr)                           #add it to the queue
+            currentVert.setColor('black')               #change current node to black after visiting all of its neigh.
 
 
 #przeszukiwanie w głąb
