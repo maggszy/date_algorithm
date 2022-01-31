@@ -1,4 +1,4 @@
-from L7_ZAD1 import Graph
+from L7_ZAD3 import Graph
 
 
 class Stack:
@@ -42,7 +42,7 @@ class DFSGraph(Graph):
             aVertex.setPred(-1)
         for aVertex in self:
             if aVertex.getColor() == 'white':
-                self.dfsvisit(aVertex)
+                self.dfsvisit(aVertex, topological_stack)
 
         return topological_stack
 
@@ -54,7 +54,7 @@ class DFSGraph(Graph):
         for nextVertex in startVertex.getConnections():
             if nextVertex.getColor() == 'white':
                 nextVertex.setPred(startVertex)
-                self.dfsvisit(nextVertex)
+                self.dfsvisit(nextVertex, topological_stack)
 
         startVertex.setColor('black')
         self.time += 1
