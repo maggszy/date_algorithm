@@ -1,7 +1,7 @@
 import sys
 
 
-class Queue:
+class Queue:  # using in bfs
     def __init__(self):
         self.items = []
 
@@ -16,6 +16,114 @@ class Queue:
 
     def size(self):
         return len(self.items)
+
+
+class Stack:  # using in topological sort
+    def __init__(self):
+        self.list_of_items = []
+
+    def push(self, item):
+        self.list_of_items.append(item)
+
+    def peek(self):
+        return self.list_of_items[len(self.list_of_items) - 1]
+
+    def pop(self):
+        return self.list_of_items.pop()
+
+    def is_empty(self):
+        return self.list_of_items == []
+
+    def size(self):
+        return len(self.list_of_items)
+
+    def __str__(self):
+        return str(self.list_of_items)
+
+
+class BinHeap:  # using in Priority Queue
+    def __init__(self):
+        self.heapList = [{'key': 'head', 'weight': 'None'}]
+        self.currentSize = 0
+
+    def percUp(self, i):
+        while i // 2 > 0:
+            if self.heapList[i]['weight'] < self.heapList[i // 2]['weight']:
+                tmp = self.heapList[i // 2]
+                self.heapList[i // 2] = self.heapList[i]
+                self.heapList[i] = tmp
+            i = i // 2
+
+    def insert(self, key, weight):
+        elem = {'key': key, 'weight': weight}
+        self.heapList.append(elem)
+        self.currentSize = self.currentSize + 1
+        self.percUp(self.currentSize)
+
+    def percDown(self, i):
+        while (i * 2) <= self.currentSize:
+            mc = self.minChild(i)
+            if self.heapList[i]['weight'] > self.heapList[mc]['weight']:
+                tmp = self.heapList[i]
+                self.heapList[i] = self.heapList[mc]
+                self.heapList[mc] = tmp
+            i = mc
+
+    def minChild(self, i):
+        if i * 2 + 1 > self.currentSize:
+            return i * 2
+        else:
+            if self.heapList[i * 2]['weight'] < self.heapList[i * 2 + 1]['weight']:
+                return i * 2
+            else:
+                return i * 2 + 1
+
+    def delMin(self):
+        retval = self.heapList[1]
+        self.heapList[1] = self.heapList[self.currentSize]
+        self.currentSize = self.currentSize - 1
+        self.heapList.pop()
+        self.percDown(1)
+        return retval
+
+    def buildHeap(self, alist):
+        i = len(alist) // 2
+        self.currentSize = len(alist)
+        new = BinHeap().heapList
+        self.heapList = new + alist[:]
+        while (i > 0):
+            self.percDown(i)
+            i = i - 1
+
+
+class PriorityQueue:  # using in dijkstra
+
+    def __init__(self):
+        self.bh = BinHeap()
+
+    def enqueue(self, key, weight):
+        self.bh.insert(key, weight)
+
+    def dequeue(self):
+        return self.bh.delMin()
+
+    def isEmpty(self):
+        return self.bh.currentSize == 0
+
+    def decreaseKey(self, key, weight):
+        i = 1
+        while i < (self.currentSize() + 1):
+            if self.bh.heapList[i]['key'] == key:
+                self.bh.heapList[i]['weight'] = weight
+                self.bh.percUp(i)
+            else:
+                i = i + 1
+
+    def loadPriorityQueue(self, list):
+        self.bh.buildHeap(list)
+
+    def currentSize(self):
+        return self.bh.currentSize
 
 
 class Vertex:
@@ -78,6 +186,7 @@ class Graph:
     def __init__(self):
         self.vertList = {}
         self.numVertices = 0
+        self.time = 0
 
     def addVertex(self,key):
         self.numVertices = self.numVertices + 1
@@ -107,8 +216,8 @@ class Graph:
     def __iter__(self):
         return iter(self.vertList.values())
 
-    #########################dodane metody do Graph z zad1#######################################
-    def bfs(g,start):
+    # methods added to BasicGraph class from task 1
+    def bfs(g, start):
         start.setDistance(0)                            #distance 0 indicates it is a start node
         start.setPred(None)                             #no predecessor at start
         vertQueue = Queue()
@@ -123,14 +232,6 @@ class Graph:
                     vertQueue.enqueue(nbr)                           #add it to the queue
             currentVert.setColor('black')               #change current node to black after visiting all of its neigh.
 
-
-#przeszukiwanie w głąb
-
-class DFSGraph(Graph):
-    def __init__(self):
-        super().__init__()
-        self.time = 0
-
     def dfs(self):
         for aVertex in self:
             aVertex.setColor('white')
@@ -139,7 +240,7 @@ class DFSGraph(Graph):
             if aVertex.getColor() == 'white':
                 self.dfsvisit(aVertex)
 
-    def dfsvisit(self,startVertex):
+    def dfsvisit(self, startVertex):
         startVertex.setColor('gray')
         self.time += 1
         startVertex.setDiscovery(self.time)
@@ -150,3 +251,33 @@ class DFSGraph(Graph):
         startVertex.setColor('black')
         self.time += 1
         startVertex.setFinish(self.time)
+
+    def topological_sort(self):
+        pass
+
+
+def KeyWeightList(self):
+    l = []
+    for i in self.getVertices():
+        dict= {}
+        dict['key'] = i
+        dict['weight'] = self.getVertex(i).getDistance()
+        l.append(dict)
+
+        return l
+
+
+def dijkstra(Graph, start):
+    pq = PriorityQueue()
+    start.setDistance(0)
+    pq.loadPriorityQueue([(v.getDistance(), v) for v in Graph])
+    while not pq.isEmpty():
+        key = pq.dequeue()['key']
+        currentVert = Graph.getVertex(key)
+
+        for nextVert in currentVert.getConnections():
+            newDist = currentVert.getDistance() + currentVert.getWeight(nextVert)
+            if newDist < nextVert.getDistance():
+                nextVert.setDistance(newDist)
+                nextVert.setPred(currentVert)
+                pq.decreaseKey(nextVert, newDist)
