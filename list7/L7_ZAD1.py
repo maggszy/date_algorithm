@@ -20,7 +20,7 @@ class Vertex:
 
 
 
-class Graph:
+class BasicGraph:
     def __init__(self):
         self.vertList = {}
         self.numVertices = 0
