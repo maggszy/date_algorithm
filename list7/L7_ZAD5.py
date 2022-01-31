@@ -5,7 +5,7 @@ class BinHeap:
 
     def percUp(self, i):
         while i // 2 > 0:
-            if self.heapList[i] < self.heapList[i // 2]:
+            if self.heapList[i]['weight'] < self.heapList[i // 2]['weight']:
                 tmp = self.heapList[i // 2]
                 self.heapList[i // 2] = self.heapList[i]
                 self.heapList[i] = tmp
@@ -102,6 +102,7 @@ def dijkstra(Graph, start):
     while not pq.isEmpty():
         key = pq.dequeue()['key']
         currentVert = Graph.getVertex(key)
+
         for nextVert in currentVert.getConnections():
             newDist = currentVert.getDistance() + currentVert.getWeight(nextVert)
             if newDist < nextVert.getDistance():
@@ -109,3 +110,4 @@ def dijkstra(Graph, start):
                 nextVert.setPred(currentVert)
                 pq.decreaseKey(nextVert, newDist)
 
+#### odczytanie ścieżki
