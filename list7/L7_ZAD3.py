@@ -1,6 +1,5 @@
 import sys
 
-
 class Queue:  # using in bfs
     def __init__(self):
         self.items = []
@@ -41,93 +40,8 @@ class Stack:  # using in topological sort
         return str(self.list_of_items)
 
 
-class BinHeap:  # using in Priority Queue
-    def __init__(self):
-        self.heapList = [{'key': 'head', 'weight': 'None'}]
-        self.currentSize = 0
-
-    def percUp(self, i):
-        while i // 2 > 0:
-            if self.heapList[i]['weight'] < self.heapList[i // 2]['weight']:
-                tmp = self.heapList[i // 2]
-                self.heapList[i // 2] = self.heapList[i]
-                self.heapList[i] = tmp
-            i = i // 2
-
-    def insert(self, key, weight):
-        elem = {'key': key, 'weight': weight}
-        self.heapList.append(elem)
-        self.currentSize = self.currentSize + 1
-        self.percUp(self.currentSize)
-
-    def percDown(self, i):
-        while (i * 2) <= self.currentSize:
-            mc = self.minChild(i)
-            if self.heapList[i]['weight'] > self.heapList[mc]['weight']:
-                tmp = self.heapList[i]
-                self.heapList[i] = self.heapList[mc]
-                self.heapList[mc] = tmp
-            i = mc
-
-    def minChild(self, i):
-        if i * 2 + 1 > self.currentSize:
-            return i * 2
-        else:
-            if self.heapList[i * 2]['weight'] < self.heapList[i * 2 + 1]['weight']:
-                return i * 2
-            else:
-                return i * 2 + 1
-
-    def delMin(self):
-        retval = self.heapList[1]
-        self.heapList[1] = self.heapList[self.currentSize]
-        self.currentSize = self.currentSize - 1
-        self.heapList.pop()
-        self.percDown(1)
-        return retval
-
-    def buildHeap(self, alist):
-        i = len(alist) // 2
-        self.currentSize = len(alist)
-        new = BinHeap().heapList
-        self.heapList = new + alist[:]
-        while (i > 0):
-            self.percDown(i)
-            i = i - 1
-
-
-class PriorityQueue:  # using in dijkstra
-
-    def __init__(self):
-        self.bh = BinHeap()
-
-    def enqueue(self, key, weight):
-        self.bh.insert(key, weight)
-
-    def dequeue(self):
-        return self.bh.delMin()
-
-    def isEmpty(self):
-        return self.bh.currentSize == 0
-
-    def decreaseKey(self, key, weight):
-        i = 1
-        while i < (self.currentSize() + 1):
-            if self.bh.heapList[i]['key'] == key:
-                self.bh.heapList[i]['weight'] = weight
-                self.bh.percUp(i)
-            else:
-                i = i + 1
-
-    def loadPriorityQueue(self, list):
-        self.bh.buildHeap(list)
-
-    def currentSize(self):
-        return self.bh.currentSize
-
-
 class Vertex:
-    def __init__(self,num):
+    def __init__(self, num):
         self.id = num
         self.connectedTo = {}
         self.color = 'white'       #new: color of node
@@ -135,13 +49,15 @@ class Vertex:
         self.pred = None           #new: predecessor
         self.disc = 0              #new: discovery time
         self.fin = 0               #new: end-of-processing time
+        self.visited = False
+        self.previous = None
 
     def addNeighbor(self,nbr,weight=0):
         self.connectedTo[nbr] = weight
-        
+
     def setColor(self,color):
         self.color = color
-        
+
     def setDistance(self,d):
         self.dist = d
 
@@ -150,34 +66,34 @@ class Vertex:
 
     def setDiscovery(self,dtime):
         self.disc = dtime
-        
+
     def setFinish(self,ftime):
         self.fin = ftime
-        
+
     def getFinish(self):
         return self.fin
-        
+
     def getDiscovery(self):
         return self.disc
-        
+
     def getPred(self):
         return self.pred
-        
+
     def getDistance(self):
         return self.dist
-        
+
     def getColor(self):
         return self.color
-    
+
     def getConnections(self):
         return self.connectedTo.keys()
-        
+
     def getWeight(self,nbr):
         return self.connectedTo[nbr]
-                
+
     def __str__(self):
         return str(self.id) + ":color " + self.color + ":disc " + str(self.disc) + ":fin " + str(self.fin) + ":dist " + str(self.dist) + ":pred \n\t[" + str(self.pred)+ "]\n"
-    
+
     def getId(self):
         return self.id
 
@@ -216,14 +132,28 @@ class Graph:
     def __iter__(self):
         return iter(self.vertList.values())
 
+    def getEdges(self):
+        edges = []
+        for v in self:
+            for w in v.get_connections():
+                edges.append((v.get_id(), w.get_id()))
+        return edges
+
+    def getWeight(self, v1, v2):
+        if self.vertList[v2] in self.vertList[v1].connectedTo:
+            return self.vertList[v1].connectedTo[self.vertList[v2]]
+
     # methods added to BasicGraph class from task 1
-    def bfs(g, start):
+    def bfs(self, start):
+        start = self.getVertex(start)
         start.setDistance(0)                            #distance 0 indicates it is a start node
         start.setPred(None)                             #no predecessor at start
         vertQueue = Queue()
         vertQueue.enqueue(start)                        #add start to processing queue
+
         while (vertQueue.size() > 0):
             currentVert = vertQueue.dequeue()           #pop next node to process -> current node
+
             for nbr in currentVert.getConnections():    #check all neighbors of the current node
                 if (nbr.getColor() == 'white'):         #if the neighbor is white
                     nbr.setColor('gray')                             #change its color to grey
@@ -255,29 +185,104 @@ class Graph:
     def topological_sort(self):
         pass
 
+    def traverse(self, start):
+        result = []
+        x = start
+        while x.getPred():
+            result.append(x.getId())
+            x = x.getPred()
+        result.append(x.getId())
+        return result
 
-def KeyWeightList(self):
-    l = []
-    for i in self.getVertices():
-        dict= {}
-        dict['key'] = i
-        dict['weight'] = self.getVertex(i).getDistance()
-        l.append(dict)
+    def showDistances(self, dist_vect):
+        print("Distance from node: {}".format(self))
+        for u in range(len(dist_vect)):
+            if dist_vect[u] == sys.maxsize:
+                d = None
+            else:
+                d = dist_vect[u]
+            print('Node {} has distance: {}'.format(u, d))
 
-        return l
 
 
-def dijkstra(Graph, start):
-    pq = PriorityQueue()
+def dijkstra(graph, start):
+    start = graph.getVertex(start)
     start.setDistance(0)
-    pq.loadPriorityQueue([(v.getDistance(), v) for v in Graph])
-    while not pq.isEmpty():
-        key = pq.dequeue()['key']
-        currentVert = Graph.getVertex(key)
+    start.setPred(None)
 
-        for nextVert in currentVert.getConnections():
-            newDist = currentVert.getDistance() + currentVert.getWeight(nextVert)
-            if newDist < nextVert.getDistance():
-                nextVert.setDistance(newDist)
-                nextVert.setPred(currentVert)
-                pq.decreaseKey(nextVert, newDist)
+    # priority queue which contains tuple
+    unvisited = [(v.getDistance(), v) for v in graph]
+    unvisited = sorted(unvisited, key=lambda x: x[0])
+
+    while len(unvisited):
+        # Pop a vertex with the smallest distance
+        vertex = unvisited.pop(0)
+        current = vertex[1]
+        current.visited = True
+
+        # for next in v.adjacent:
+        for next in current.connectedTo:
+            # if visited, skip
+            if next.visited:
+                continue
+
+            new = current.getDistance() + current.getWeight(next)
+            if new < next.getDistance():
+                next.setDistance(new)
+                next.setPred(current)
+            else:
+                pass
+
+        # Rebuild the unvisited list
+        unvisited = [(v.getDistance(), v) for v in graph if not v.visited]
+        unvisited = sorted(unvisited, key=lambda x: x[0])
+
+
+def shortest(graph, target, path=None):
+    if path == None:
+        path = [target]
+        target = graph.getVertex(target)
+
+    if target.previous:
+        path.append(target.previous.getId())
+        shortest(graph, target.previous, path)
+
+    return path[::-1]
+
+
+def makePath(graph, start):
+    start = graph.getVertex(start)
+    if not start:
+        raise Exception("This point is not defined in the graph")
+    graph.bfs(start)
+    # dijkstra(graph, start)
+    path = {v: v.getDistance for v in graph.getVertices()}
+    undiscovered = {v: None for v in graph.getVertices()}
+
+    path.update(undiscovered)
+    return path
+
+
+if __name__ == '__main__':
+    g = Graph()
+
+    g.addVertex('v0')
+    g.addVertex('v1')
+    g.addVertex('v2')
+    g.addVertex('v3')
+    g.addVertex('v4')
+    g.addVertex('v5')
+
+    g.addEdge('v0', 'v1', 5)
+    g.addEdge('v0', 'v5', 2)
+    g.addEdge('v1', 'v2', 4)
+    g.addEdge('v2', 'v3', 9)
+    g.addEdge('v3', 'v4', 7)
+    g.addEdge('v3', 'v5', 3)
+    g.addEdge('v4', 'v0', 1)
+    g.addEdge('v5', 'v4', 8)
+    g.addEdge('v5', 'v2', 1)
+
+    print(makePath(g, 'v4'))
+
+
