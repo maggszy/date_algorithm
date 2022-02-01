@@ -104,13 +104,13 @@ class Graph:
         self.numVertices = 0
         self.time = 0
 
-    def addVertex(self,key):
+    def addVertex(self, key):
         self.numVertices = self.numVertices + 1
         newVertex = Vertex(key)
         self.vertList[key] = newVertex
         return newVertex
 
-    def getVertex(self,n):
+    def getVertex(self, n):
         if n in self.vertList:
             return self.vertList[n]
         else:
@@ -119,7 +119,7 @@ class Graph:
     def __contains__(self,n):
         return n in self.vertList
 
-    def addEdge(self,f,t,cost=0):
+    def addEdge(self, f ,t , cost=0):
         if f not in self.vertList:
             nv = self.addVertex(f)
         if t not in self.vertList:
@@ -144,7 +144,8 @@ class Graph:
             return self.vertList[v1].connectedTo[self.vertList[v2]]
 
     # methods added to BasicGraph class from task 1
-    def bfs(self, start):
+    # rozszerzenie bfs aby była możliwość znaleźć ścieżkę do wybranego lub każdego węzła
+    def bfs(self, start, end=None):
         start = self.getVertex(start)
         start.setDistance(0)                            #distance 0 indicates it is a start node
         start.setPred(None)                             #no predecessor at start
@@ -161,6 +162,62 @@ class Graph:
                     nbr.setPred(currentVert)                         #current node is its predecessor
                     vertQueue.enqueue(nbr)                           #add it to the queue
             currentVert.setColor('black')               #change current node to black after visiting all of its neigh.
+
+
+        if end != None:
+            start = self.getVertex(start)
+            end = self.getVertex(end)
+
+            start.setDistance(0)
+            start.setPred(None)
+            listOfDistances = []
+            for element in self.getVertices():
+                listOfDistances.append([self.getVertex(element).dist, self.getVertex(element).id])
+
+                while listOfDistances != []:
+                    listOfDistances = sorted(listOfDistances, reverse=True)
+
+                    currentVert = self.getVertex(listOfDistances.pop()[1])
+                    if currentVert.dist == sys.maxsize:
+                        break
+
+                    for nbr in currentVert.getConnections():
+                        alternativeRoute = currentVert.dist + currentVert.connectedTo[nbr]
+                        if alternativeRoute < nbr.dist:
+                            nbr.setDistance(alternativeRoute)
+                            nbr.setPred(currentVert)
+                            for element in listOfDistances:
+                                if element[1] == nbr.id:
+                                    element[0] = alternativeRoute
+
+                path = []
+
+                currentVert = end
+
+                while currentVert.pred != None:
+                    path.insert(0, currentVert.id)
+                    currentVert = currentVert.pred
+                if path:
+                    path.insert(0, currentVert.id)
+                for i in path:
+                    currentVert = self.getVertex(i)
+
+                length = 0
+                for i in range(0, len(path) - 1):
+                    j = i + 1
+                    el = self.getVertex(path[i])
+                    el1 = self.getVertex(path[j])
+                    length += el.getWeight(el1)
+
+                return length
+
+            else:
+                listOfElements = self.getVertices()
+                listawynikow = ""
+                for element in listOfElements:
+                    listawynikow += (str(self.bfs(start, element)) + "\n")
+                self.bfs(start, element)
+                return listawynikow
 
     def dfs(self):
         topology = []
@@ -209,7 +266,7 @@ class Graph:
             print('Node {} has distance: {}'.format(u, d))
 
 
-
+#  functions using to count the shortest path
 def dijkstra(graph, start):
     start = graph.getVertex(start)
     start.setDistance(0)
@@ -259,8 +316,7 @@ def makePath(graph, start):
     start = graph.getVertex(start)
     if not start:
         raise Exception("This point is not defined in the graph")
-    graph.bfs(start)
-    # dijkstra(graph, start)
+    dijkstra(graph, start)
     path = {v: v.getDistance for v in graph.getVertices()}
     undiscovered = {v: None for v in graph.getVertices()}
 
@@ -271,23 +327,25 @@ def makePath(graph, start):
 if __name__ == '__main__':
     g = Graph()
 
-    g.addVertex('v0')
-    g.addVertex('v1')
-    g.addVertex('v2')
-    g.addVertex('v3')
-    g.addVertex('v4')
-    g.addVertex('v5')
+    g.addEdge(6, 1, 5)
+    g.addEdge(6, 5, 2)
+    g.addEdge(1, 2, 4)
+    g.addEdge(2, 3, 9)
+    g.addEdge(3, 4, 7)
+    g.addEdge(4, 6, 1)
+    g.addEdge(3, 7, 2)
+    g.addEdge(7, 4, 10)
+    g.addEdge(5, 2, 10)
+    g.addEdge(1, 3, 4)
+    g.addEdge(4, 2, 2)
+    g.addEdge(6, 7, 100)
+    g.addEdge(10, 11, 1)
 
-    g.addEdge('v0', 'v1', 5)
-    g.addEdge('v0', 'v5', 2)
-    g.addEdge('v1', 'v2', 4)
-    g.addEdge('v2', 'v3', 9)
-    g.addEdge('v3', 'v4', 7)
-    g.addEdge('v3', 'v5', 3)
-    g.addEdge('v4', 'v0', 1)
-    g.addEdge('v5', 'v4', 8)
-    g.addEdge('v5', 'v2', 1)
 
-    print(makePath(g, 'v4'))
+    print("Topological sort")
+    print(g.dfs())
+
+    print("Shortest Path")
+    print(g.bfs('1'))
 
 
