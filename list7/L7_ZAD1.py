@@ -1,3 +1,5 @@
+import graphviz
+
 class Vertex:
     def __init__(self,key):
         self.id = key
@@ -52,3 +54,18 @@ class BasicGraph:
 
     def __iter__(self):
         return iter(self.vertList.values())
+
+
+    def printing(self):
+        for v in self:
+            for w in v.getConnections():
+                print("( %s , %s )" % (v.getId(), w.getId()))
+
+    def graph_viz(self):
+        dot = graphviz.Digraph()
+        for i in self.getVertices():
+            for j in self.getVertex(i).getConnections():
+                dot.edge(str(i), str(j.id))
+        dot.render('graph.gv', view=True)
+
+
