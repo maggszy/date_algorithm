@@ -1,4 +1,5 @@
 import operator
+from L7_ZAD3 import *
 
 INITIAL = (3, 3, 0)
 GOAL = (0, 0, 1)
@@ -58,7 +59,7 @@ class Status:
 		return hash(self.state)
 
 
-class Solution:
+class Problem:
 	def __init__(self):
 		initial_status = Status(INITIAL[0], INITIAL[1], INITIAL[2])
 		goal_status = Status(GOAL[0], GOAL[1], GOAL[2])
@@ -89,9 +90,29 @@ class Solution:
 		return operator.sub if boat == 0 else operator.add
 
 
+def build_graph_from_problem():
+	graph = Graph()
+	initial_condition = Problem()
+	graph.addVertex(initial_condition)
+
+	def perform(current_state):
+		new_states = current_state.get_legal_actions()
+		for state in new_states:
+			is_new = not (state in graph.getVertices())
+			if is_new:
+				perform(current_state)
+
+	perform(initial_condition)
+	return graph
+
+
+def path():
+	pass
+
 
 def main():
-	pass
+	build_graph_from_problem()
+
 
 if __name__ == '__main__':
 	main()
