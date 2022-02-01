@@ -163,27 +163,32 @@ class Graph:
             currentVert.setColor('black')               #change current node to black after visiting all of its neigh.
 
     def dfs(self):
+        topology = []
         for aVertex in self:
             aVertex.setColor('white')
             aVertex.setPred(-1)
         for aVertex in self:
             if aVertex.getColor() == 'white':
-                self.dfsvisit(aVertex)
+                self.dfsvisit(aVertex, topology)
 
-    def dfsvisit(self, startVertex):
+        topological_sorted = []
+        for i in topology:
+            topological_sorted.insert(0, i.id)
+
+        return topological_sorted
+
+    def dfsvisit(self, startVertex, topology):
         startVertex.setColor('gray')
         self.time += 1
         startVertex.setDiscovery(self.time)
         for nextVertex in startVertex.getConnections():
             if nextVertex.getColor() == 'white':
                 nextVertex.setPred(startVertex)
-                self.dfsvisit(nextVertex)
+                self.dfsvisit(nextVertex, topology)
         startVertex.setColor('black')
         self.time += 1
+        topology.append(startVertex)
         startVertex.setFinish(self.time)
-
-    def topological_sort(self):
-        pass
 
     def traverse(self, start):
         result = []
