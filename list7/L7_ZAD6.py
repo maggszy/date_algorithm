@@ -1,118 +1,164 @@
-import operator
-from L7_ZAD3 import *
-
-INITIAL = (3, 3, 0)
-GOAL = (0, 0, 1)
+from L7_ZAD3 import Graph
 
 
-class Status:
-	def __init__(self, cannibals, missionaries, boat):
-		self.state = (missionaries, cannibals, boat)
-		self.cannibals = cannibals
-		self.missionaries = missionaries
-		self.boat = boat
+class State:
+    def __init__(self, cannibal_left, missionary_left, boat, cannibal_right, missionary_right):
+        self.cannibal_left = cannibal_left
+        self.missionary_left = missionary_left
+        self.boat = boat
+        self.cannibal_right = cannibal_right
+        self.missionary_right = missionary_right
+        self.parent = None
+        self.text = (str(cannibal_left) + " " + str(missionary_left) + " " + str(boat))
 
-	def is_legal(self):
-		if self._has_more_cannibals():
-			return False
-		elif self._has_more_boats():
-			return False
-		else:
-			return True
+    def is_goal(self):
+        if self.cannibal_left == 0 and self.missionary_left == 0:
+            return True
+        else:
+            return False
 
-	def is_goal(self):
-		if self.state == (0, 0, 1):
-			return True
-		else:
-			return False
+    def is_valid(self):
+        if self.missionary_left >= 0 and self.missionary_right >= 0 \
+                and self.cannibal_left >= 0 and self.cannibal_right >= 0 \
+                and (self.missionary_left == 0 or self.missionary_left >= self.cannibal_left) \
+                and (self.missionary_right == 0 or self.missionary_right >= self.cannibal_right):
+            return True
+        else:
+            return False
 
-	def _has_more_cannibals_left(self):
-		return ((self.missionaries == 1 and self.cannibals == 3) or
-				(self.missionaries == 1 and self.cannibals == 2) or
-				(self.missionaries == 2 and self.cannibals == 3))
+    def __eq__(self, other):
+        return self.cannibal_left == other.cannibal_left and self.missionary_left == other.missionary_left \
+               and self.boat == other.boat and self.cannibal_right == other.cannibal_right \
+               and self.missionary_right == other.missionary_right
 
-	def _has_more_cannibals_right(self):
-		return ((self.missionaries == 1 and self.cannibals == 0) or
-				(self.missionaries == 1 and self.cannibals == 0))
-
-	def _has_more_cannibals(self):
-		return self._has_more_cannibals_left() or self._has_more_cannibals_right()
-
-	def _has_more_boats(self):
-		return self.boat > 1
-
-	def __add__(self, other):
-		result = tuple(map(operator.add, self.state, other))
-		return Status(result[0], result[1], result[2])
-
-	def __sub__(self, other):
-		result = tuple(map(operator.sub, self.state, other))
-		return Status(result[0], result[1], result[2])
-
-	def __str__(self):
-		return '<Status {}>'.format(self.state)
-
-	def __eq__(self, other):
-		return isinstance(other, Status) and self.state == other.state
-
-	def __hash__(self):
-		return hash(self.state)
+    def __hash__(self):
+        return hash((self.cannibal_left, self.missionary_left, self.boat, self.cannibal_right, self.missionary_right))
 
 
-class Problem:
-	def __init__(self):
-		initial_status = Status(INITIAL[0], INITIAL[1], INITIAL[2])
-		goal_status = Status(GOAL[0], GOAL[1], GOAL[2])
-		super().__init__(initial_status, goal_status)
+class RiverProblem(Graph):
+    def __init__(self):
+        self.photo = 1
+        self.children = []
+        self.vertList = {}
+        self.numVertices = 0
 
-	def action(self, status):
-		actions = self.get_all_actions()
-		return self.get_legal_actions(status, actions)
+    def successors(self, current):
+        children = []
 
-	def get_legal_actions(self, status, actions):
-		is_valid = lambda action: self.operation(status, action)
-		return set(filter(is_valid, actions))
+        if current.boat == 0:
+            new_state = State(current.cannibal_left, current.missionary_left - 2, 1,
+                              current.cannibal_right, current.missionary_right + 2)
 
-	def get_all_actions(self):
-		return {
-			(1, 0, 1),
-			(2, 0, 1),
-			(0, 2, 1),
-			(1, 1, 1),
-			(0, 1, 1)
-		}
+            if new_state.is_valid():  # (2, 0, 1)
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left - 2, current.missionary_left, 1,
+                              current.cannibal_right + 2, current.missionary_right)
 
-	def operation(self, status, op):
-		do = self.do_operation(status.boat)
-		return do(status, op)
+            if new_state.is_valid():  # (0, 2, 1)
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left - 1, current.missionary_left - 1, 1,
+                              current.cannibal_right + 1, current.missionary_right + 1)
 
-	def do_operation(self, boat):
-		return operator.sub if boat == 0 else operator.add
+            if new_state.is_valid():  # (1, 1, 1)
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left, current.missionary_left - 1, 1,
+                              current.cannibal_right, current.missionary_right + 1)
 
+            if new_state.is_valid():  # (1, 0, 1)
+                new_state.parent = current
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left - 1, current.missionary_left, 1,
+                              current.cannibal_right + 1, current.missionary_right)
 
-def build_graph_from_problem():
-	graph = Graph()
-	initial_condition = Problem()
-	graph.addVertex(initial_condition)
+            if new_state.is_valid():  # (0, 1, 1)
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
 
-	def perform(current_state):
-		new_states = current_state.get_legal_actions()
-		for state in new_states:
-			is_new = not (state in graph.getVertices())
-			if is_new:
-				perform(current_state)
+        else:
+            new_state = State(current.cannibal_left, current.missionary_left + 2, 0,
+                              current.cannibal_right, current.missionary_right - 2)
 
-	perform(initial_condition)
-	return graph
+            if new_state.is_valid():  # (2, 0, 0)
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left + 2, current.missionary_left, 0,
+                              current.cannibal_right - 2, current.missionary_right)
 
+            if new_state.is_valid():  # (0, 2, 0)
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left + 1, current.missionary_left + 1, 0,
+                              current.cannibal_right - 1, current.missionary_right - 1)
+            ## One missionary and one cannibal cross right to left.
+            if new_state.is_valid():
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left, current.missionary_left + 1, 0,
+                              current.cannibal_right, current.missionary_right - 1)
+            ## One missionary crosses right to left.
+            if new_state.is_valid():
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
+            new_state = State(current.cannibal_left + 1, current.missionary_left, 0,
+                              current.cannibal_right - 1, current.missionary_right)
+            ## One cannibal crosses right to left.
+            if new_state.is_valid():
+                new_state.parent = current
+                children.append(new_state)
+                self.addEdge(current.text, new_state.text, 1)
 
-def path():
-	pass
+        return children
+
+    def finding_a_solution(self):
+        initial_state = State(3, 3, 0, 0, 0)
+        if initial_state.is_goal():
+            return initial_state
+        l = list()
+        explored = set()
+        l.append(initial_state)
+        while l:
+            state = l.pop(0)
+            if state.is_goal():
+                return state
+            explored.add(state)
+            children = self.successors(state)
+            for child in children:
+                if (child not in explored) or (child not in l):
+                    l.append(child)
+        return None
+
+    def print_solution(self, solution):
+        path = []
+        path.append(solution)
+        parent = solution.parent
+        while parent:
+            path.append(parent)
+            parent = parent.parent
+
+        for t in range(len(path)):
+            state = path[len(path) - t - 1]
+            print("(" + str(state.cannibal_left) + "," + str(state.missionary_left) \
+                  + "," + str(state.boat) + "," + str(state.cannibal_right) + "," + \
+                  str(state.missionary_right) + ")")
 
 
 def main():
-	build_graph_from_problem()
+    g = RiverProblem()
+    g.print_solution(g.finding_a_solution())
 
 
-if __name__ == '__main__':
-	main()
+if __name__ == "__main__":
+    main()
